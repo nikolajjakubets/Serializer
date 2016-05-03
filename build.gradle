@@ -1,0 +1,51 @@
+group 'acmi.l2.clientmod'
+version '1.0'
+
+apply plugin: 'java'
+apply plugin: 'maven'
+
+tasks.withType(JavaCompile) {
+    options.encoding = 'UTF-8'
+}
+
+task sourcesJar(type: Jar, dependsOn: classes) {
+    classifier = 'sources'
+    from sourceSets.main.allSource
+}
+
+artifacts {
+    archives sourcesJar
+}
+
+configure(install.repositories.mavenInstaller) {
+    pom.project {
+        name = 'Serializer'
+        description = 'Simple serialization library.'
+        url = 'https://github.com/acmi/Serializer'
+        licenses {
+            license {
+                name = 'The MIT License'
+                url = 'https://opensource.org/licenses/MIT'
+                distribution = 'repo'
+            }
+        }
+        developers {
+            developer {
+                id = 'acmi'
+                name = 'Aleksei Sazonov'
+                email = 'acmi831@gmail.com'
+            }
+        }
+    }
+}
+
+repositories {
+    mavenCentral()
+    maven { url "https://raw.githubusercontent.com/acmi/L2io/mvn-repo" }
+}
+
+dependencies {
+    compile group: 'acmi.l2.clientmod', name: 'l2io', version: '2.0'
+
+    testCompile group: 'junit', name: 'junit', version: '4.11'
+}
