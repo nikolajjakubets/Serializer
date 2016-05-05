@@ -252,8 +252,8 @@ public class ReflectionSerializerFactory<C extends Context> implements Serialize
                 }
             });
         } else {
-            Serializer typeSerializer = forClass(type);
             read.add((object, dataInput) -> {
+                Serializer typeSerializer = forClass(type);
                 Object obj = typeSerializer.instantiate(dataInput);
                 if (obj != null) {
                     Serializer realTypeSerializer = forClass(obj.getClass());
@@ -261,7 +261,11 @@ public class ReflectionSerializerFactory<C extends Context> implements Serialize
                 }
                 setter.accept(object, () -> obj);
             });
-            write.add((object, dataOutput) -> typeSerializer.writeObject(getter.apply(object), dataOutput));
+            write.add((object, dataOutput) -> {
+                Object obj = getter.apply(object);
+                Serializer realTypeSerializer = forClass(obj.getClass());
+                realTypeSerializer.writeObject(obj, dataOutput);
+            });
         }
     }
 }

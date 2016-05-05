@@ -26,6 +26,7 @@ import acmi.l2.clientmod.io.annotation.Length;
 import acmi.l2.clientmod.io.annotation.ReadMethod;
 import acmi.l2.clientmod.io.annotation.UShort;
 
+import java.io.UncheckedIOException;
 import java.util.Arrays;
 
 public class TestClass {
@@ -34,6 +35,7 @@ public class TestClass {
     public int[] foo;
     @Custom(StringSerializer.class)
     public String bar;
+    @Custom(InnerClass.InnerClassSerializer.class)
     public InnerClass baz;
 
     public static class InnerClass{
@@ -65,6 +67,65 @@ public class TestClass {
         @Override
         public int hashCode() {
             return field1;
+        }
+
+        public static class InnerClassSerializer implements Serializer<InnerClass, Context>{
+            @Override
+            public InnerClass instantiate(ObjectInput<Context> input) throws UncheckedIOException {
+                switch (input.readUnsignedByte()){
+                    case 1:
+                        return new InnerClassExtends();
+                    default:
+                        return new InnerClass();
+                }
+            }
+
+            @Override
+            public <S extends InnerClass> void readObject(S obj, ObjectInput<Context> input) throws UncheckedIOException {
+                Serializer serializer = input.getSerializerFactory().forClass(obj.getClass());
+                serializer.readObject(obj, input);
+            }
+
+            @Override
+            public <S extends InnerClass> void writeObject(S obj, ObjectOutput<Context> output) throws UncheckedIOException {
+                if (obj instanceof InnerClassExtends){
+                    output.writeByte(1);
+                }else{
+                    output.writeByte(0);
+                }
+                output.write(obj);
+            }
+        }
+    }
+
+    public static class InnerClassExtends extends InnerClass{
+        public int field2;
+
+        public InnerClassExtends() {
+        }
+
+        public InnerClassExtends(int field1, int field2) {
+            super(field1);
+            this.field2 = field2;
+        }
+
+        @Override
+        public boolean equals(Object o) {
+            if (this == o) return true;
+            if (!(o instanceof InnerClassExtends)) return false;
+            if (!super.equals(o)) return false;
+
+            InnerClassExtends that = (InnerClassExtends) o;
+
+            return field2 == that.field2;
+
+        }
+
+        @Override
+        public int hashCode() {
+            int result = super.hashCode();
+            result = 31 * result + field2;
+            return result;
         }
     }
 

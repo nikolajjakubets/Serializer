@@ -25,8 +25,6 @@ import org.junit.Test;
 
 import java.io.ByteArrayInputStream;
 import java.io.ByteArrayOutputStream;
-import java.util.ArrayList;
-import java.util.Arrays;
 
 import static org.junit.Assert.assertEquals;
 
@@ -36,7 +34,7 @@ public class SerializerTests {
         TestClass testObject = new TestClass();
         testObject.foo = new int[]{0, 123};
         testObject.bar = "test";
-        testObject.baz = new TestClass.InnerClass(10);
+        testObject.baz = new TestClass.InnerClassExtends(10, 20);
 
         Context context = null;
         SerializerFactory<Context> serializerFactory = new ReflectionSerializerFactory<>();
