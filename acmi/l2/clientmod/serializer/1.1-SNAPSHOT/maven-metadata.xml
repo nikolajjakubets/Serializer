@@ -2,12 +2,11 @@
 <metadata>
   <groupId>acmi.l2.clientmod</groupId>
   <artifactId>serializer</artifactId>
+  <version>1.1-SNAPSHOT</version>
   <versioning>
-    <release>1.0</release>
-    <versions>
-      <version>1.0</version>
-      <version>1.1-SNAPSHOT</version>
-    </versions>
+    <snapshot>
+      <localCopy>true</localCopy>
+    </snapshot>
     <lastUpdated>20160505120000</lastUpdated>
   </versioning>
 </metadata>
