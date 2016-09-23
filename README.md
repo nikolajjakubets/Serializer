@@ -24,6 +24,10 @@ Maven
 -----
 ```maven
 <repository>
+    <id>l2io-github</id>
+    <url>https://raw.githubusercontent.com/acmi/L2io/mvn-repo</url>
+</repository>
+<repository>
     <id>serializer-github</id>
     <url>https://raw.githubusercontent.com/acmi/Serializer/mvn-repo</url>
 </repository>
@@ -39,6 +43,7 @@ Gradle
 ------
 ```gradle
 repositories {
+    maven { url "https://raw.githubusercontent.com/acmi/L2io/mvn-repo" }
     maven { url "https://raw.githubusercontent.com/acmi/Serializer/mvn-repo" }
 }
 
