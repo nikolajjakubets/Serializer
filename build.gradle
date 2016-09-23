@@ -1,5 +1,5 @@
 group 'acmi.l2.clientmod'
-version '1.1-SNAPSHOT'
+version '1.2.0'
 
 apply plugin: 'java'
 apply plugin: 'maven'
@@ -45,7 +45,7 @@ repositories {
 }
 
 dependencies {
-    compile group: 'acmi.l2.clientmod', name: 'l2io', version: '2.0'
+    compile group: 'acmi.l2.clientmod', name: 'l2io', version: '2.1.+'
 
-    testCompile group: 'junit', name: 'junit', version: '4.11'
+    testCompile group: 'junit', name: 'junit', version: '4.12'
 }

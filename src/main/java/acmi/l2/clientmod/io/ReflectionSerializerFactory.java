@@ -60,42 +60,7 @@ public class ReflectionSerializerFactory<C extends Context> implements Serialize
     }
 
     protected Serializer<?, C> createSerializer(Class<?> clazz, List<BiConsumer<Object, ObjectInput<C>>> readActions, List<BiConsumer<Object, ObjectOutput<C>>> writeActions) {
-        return new Serializer<Object, C>() {
-            private Function<ObjectInput<C>, Object> instantiator;
-            private BiConsumer<Object, ObjectInput<C>> reader;
-            private BiConsumer<Object, ObjectOutput<C>> writer;
-
-            @Override
-            public Object instantiate(ObjectInput<C> input) throws UncheckedIOException {
-                if (instantiator == null) {
-                    instantiator = createInstantiator(clazz);
-                }
-                return instantiator.apply(input);
-            }
-
-            @Override
-            public <S> void readObject(S obj, ObjectInput<C> input) throws UncheckedIOException {
-                if (obj == null)
-                    return;
-                if (reader == null) {
-                    reader = createReader(clazz, readActions);
-                }
-                reader.accept(obj, input);
-            }
-
-            @Override
-            public <S> void writeObject(S obj, ObjectOutput<C> output) throws UncheckedIOException {
-                if (writer == null) {
-                    writer = createWriter(clazz, writeActions);
-                }
-                writer.accept(obj, output);
-            }
-
-            @Override
-            public String toString() {
-                return "Serializer[" + clazz + "]";
-            }
-        };
+        return new SerializerImpl(clazz, readActions, writeActions);
     }
 
     protected Function<ObjectInput<C>, Object> createInstantiator(Class<?> clazz) {
@@ -110,7 +75,7 @@ public class ReflectionSerializerFactory<C extends Context> implements Serialize
         return (obj, output) -> writeActions.forEach(action -> action.accept(obj, output));
     }
 
-    private <T> void buildForClass(Class<?> clazz, List<BiConsumer<T, ObjectInput<C>>> read, List<BiConsumer<T, ObjectOutput<C>>> write) {
+    protected <T> void buildForClass(Class<?> clazz, List<BiConsumer<T, ObjectInput<C>>> read, List<BiConsumer<T, ObjectOutput<C>>> write) {
         if (clazz.getSuperclass() != null && clazz.getSuperclass() != Object.class) {
             Serializer superIO = forClass(clazz.getSuperclass());
             read.add(superIO::readObject);
@@ -266,6 +231,53 @@ public class ReflectionSerializerFactory<C extends Context> implements Serialize
                 Serializer realTypeSerializer = forClass(obj.getClass());
                 realTypeSerializer.writeObject(obj, dataOutput);
             });
+        }
+    }
+
+    protected class SerializerImpl implements Serializer<Object, C> {
+        protected final Class<?> clazz;
+        protected final List<BiConsumer<Object, ObjectInput<C>>> readActions;
+        protected final List<BiConsumer<Object, ObjectOutput<C>>> writeActions;
+
+        private Function<ObjectInput<C>, Object> instantiator;
+        private BiConsumer<Object, ObjectInput<C>> reader;
+        private BiConsumer<Object, ObjectOutput<C>> writer;
+
+        public SerializerImpl(Class<?> clazz, List<BiConsumer<Object, ObjectInput<C>>> readActions, List<BiConsumer<Object, ObjectOutput<C>>> writeActions) {
+            this.clazz = clazz;
+            this.readActions = readActions;
+            this.writeActions = writeActions;
+        }
+
+        @Override
+        public Object instantiate(ObjectInput<C> input) throws UncheckedIOException {
+            if (instantiator == null) {
+                instantiator = createInstantiator(clazz);
+            }
+            return instantiator.apply(input);
+        }
+
+        @Override
+        public <S> void readObject(S obj, ObjectInput<C> input) throws UncheckedIOException {
+            if (obj == null)
+                return;
+            if (reader == null) {
+                reader = createReader(clazz, readActions);
+            }
+            reader.accept(obj, input);
+        }
+
+        @Override
+        public <S> void writeObject(S obj, ObjectOutput<C> output) throws UncheckedIOException {
+            if (writer == null) {
+                writer = createWriter(clazz, writeActions);
+            }
+            writer.accept(obj, output);
+        }
+
+        @Override
+        public String toString() {
+            return "Serializer[" + clazz + "]";
         }
     }
 }

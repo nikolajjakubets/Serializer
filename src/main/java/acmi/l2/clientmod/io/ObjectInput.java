@@ -43,7 +43,7 @@ public interface ObjectInput<C extends Context> extends DataInput {
         return obj;
     }
 
-    static <C extends Context> ObjectInput<C> objectInput(DataInput dataInput, SerializerFactory<C> serializerFactory, C context){
+    static <C extends Context> ObjectInput<C> objectInput(DataInput dataInput, SerializerFactory<C> serializerFactory, C context) {
         return new ObjectInput<C>() {
             @Override
             public SerializerFactory<C> getSerializerFactory() {

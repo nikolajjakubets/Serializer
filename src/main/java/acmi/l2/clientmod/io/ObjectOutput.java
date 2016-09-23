@@ -38,7 +38,7 @@ public interface ObjectOutput<C extends Context> extends DataOutput {
         serializer.writeObject(object, this);
     }
 
-    static <C extends Context> ObjectOutput<C> objectOutput(DataOutput dataOutput, SerializerFactory<C> serializerFactory, C context){
+    static <C extends Context> ObjectOutput<C> objectOutput(DataOutput dataOutput, SerializerFactory<C> serializerFactory, C context) {
         return new ObjectOutput<C>() {
             @Override
             public SerializerFactory<C> getSerializerFactory() {

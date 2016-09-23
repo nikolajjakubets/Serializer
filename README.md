@@ -35,7 +35,7 @@ Maven
 <dependency>
     <groupId>acmi.l2.clientmod</groupId>
     <artifactId>serializer</artifactId>
-    <version>1.0</version>
+    <version>1.2.+</version>
 </dependency>
 ```
 
@@ -48,6 +48,6 @@ repositories {
 }
 
 dependencies {
-    compile group:'acmi.l2.clientmod', name:'serializer', version: '1.0'
+    compile group:'acmi.l2.clientmod', name:'serializer', version: '1.2.+'
 }
 ```
