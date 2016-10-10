@@ -182,15 +182,21 @@ public class ReflectionSerializerFactory<C extends Context> implements Serialize
             Class componentType = type.getComponentType();
             Length length = (Length) getAnnotation.apply(Length.class);
             Function<DataInput, Integer> lenReader;
+            BiConsumer<DataOutput, Integer> lenWriter;
             if (length != null) {
-                if (length.value() == Length.Type.BYTE)
+                if (length.value() == Length.Type.BYTE) {
                     lenReader = DataInput::readUnsignedByte;
-                else if (length.value() == Length.Type.INT)
+                    lenWriter = DataOutput::writeByte;
+                } else if (length.value() == Length.Type.INT) {
                     lenReader = DataInput::readInt;
-                else
+                    lenWriter = DataOutput::writeInt;
+                } else {
                     lenReader = DataInput::readCompactInt;
+                    lenWriter = DataOutput::writeCompactInt;
+                }
             } else {
                 lenReader = DataInput::readCompactInt;
+                lenWriter = DataOutput::writeCompactInt;
             }
             read.add((object, dataInput) -> {
                 Object array = Array.newInstance(componentType, lenReader.apply(dataInput));
@@ -206,7 +212,7 @@ public class ReflectionSerializerFactory<C extends Context> implements Serialize
             });
             write.add((object, dataOutput) -> {
                 Object array = getter.apply(object);
-                dataOutput.writeCompactInt(Array.getLength(array));
+                lenWriter.accept(dataOutput, Array.getLength(array));
                 for (int i = 0; i < Array.getLength(array); i++) {
                     int ind = i;
                     List<BiConsumer<Object, ObjectInput<C>>> arrayRead = new ArrayList<>();
