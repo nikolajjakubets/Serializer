@@ -31,9 +31,12 @@ import java.lang.annotation.Target;
 public @interface Length {
     Type value();
 
+    int length() default 0;
+
     enum Type {
         COMPACT,
         BYTE,
-        INT
+        INT,
+        CONST;
     }
 }

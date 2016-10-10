@@ -190,6 +190,9 @@ public class ReflectionSerializerFactory<C extends Context> implements Serialize
                 } else if (length.value() == Length.Type.INT) {
                     lenReader = DataInput::readInt;
                     lenWriter = DataOutput::writeInt;
+                } else if (length.value() == Length.Type.CONST) {
+                    lenReader = input -> length.length();
+                    lenWriter = (output, len) -> {};
                 } else {
                     lenReader = DataInput::readCompactInt;
                     lenWriter = DataOutput::writeCompactInt;
